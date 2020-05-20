@@ -1,0 +1,19 @@
+.stats-block {
+clear: both;
+position: relative;
+margin: 3px;
+padding: 0;
+}
+
+.button-block {
+clear: both;
+position: relative;
+}
+
+.modal {
+    display: block;
+}
+
+.card {
+    float: left;
+}

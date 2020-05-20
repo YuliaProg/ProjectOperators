@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang = "en">
+    <head> 
+        <meta charset="UTF-8">
+        <meta name = "viewport"
+            content = "width-device-width", user-scable = no, initial-scale = 1.0, maximum-scale = 1.0, user-scalable="no">
+        <meta http-equiv="X-UA-Compatible" content="ie-edge">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="vue.css">
+        <title> VueJS </title>
+    </head>
+    <body>
+        <div class = "container pt-5  ml-3 mb-2">  <!-- pt-5 - отступ в 5 пикселей (top) -->
+            <div class="row">
+                <div class="col">
+                    <h1> Operator's application </h1>
+                </div>
+            </div>
+        </div>
+        <div class="ml-4" id="app">
+            <div class="row">
+                <div class="col-4 pl-2">
+                    <div class="form-group mt-3">
+                        <label for="search">Find your operator</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="search" 
+                            placeholder="class, name"
+                            v-model="search"
+                            >
+                    </div>
+                    <hr> <!--горизонтальная черта -->
+                    <ul class="list-group">
+                        <li 
+                            v-for="(operator, index) in filterOperators"
+                            class="list-group-item list-group-item-action pointer"
+                            v-on:click="selectOperator(operator, index)" 
+                            v-bind:class="{'active': selectedOperatorIndex === index}"
+                        >
+                        <!-- click - событие. selectOperator - метод, описан строкой, потом - в js -->
+                        <!-- v-bind:class="{'active': selectedOperatorIndex === index}
+                        Если selectedOperatorIndex равен index, ему присваивается класс 'active' (подсвечивается синим)-->
+                            {{operator.position}} - {{operator.name}}
+                        </li>
+                            <!-- operator - элемент, in - в массиве, operators - массиве -->
+                    </ul>
+                </div>
+                <div class="col-4 pr-0 pl-2">
+                    <div class="row">
+                        <h2 class="type ml-3">{{currentOperator.position}}</h2>
+                    </div>
+                    <!-- {{вывод части кода из js}} -->
+                    <div class="row">
+                        <img 
+                        v-bind:src="currentOperator.image" 
+                        width="90%" 
+                        v-bind:alt="currentOperator.name" 
+                        class="rounded"
+                        >
+                    </div>
+                    <!-- Части vue: v-bind - динамический атрибут, src - то, что нужно выводить, ссылка - без {} 
+                    можно использовать вместо v-bind просто : -> :src="operator.image-->
+                </div>
+                <div class="col-2 pr-0 pl-0">
+                    <div class="row">
+                        <h5 class="container name mt-2">Description</h5>
+                    </div>
+                    <div class="row">
+                        <ul class="container list">
+                            <li> Name - <strong> {{currentOperator.name}} </strong> </li>
+                            <li> Price - <strong> {{currentOperator.price}} </strong> </li>
+                            <li> Department - <strong> {{currentOperator.department}} </strong> </li>
+                        </ul>
+                    </div>  
+                    <div class="row">
+                        <div class = "stats-block">
+                            <p class="container description" v-if='statsVisibility'> {{currentOperator.fullname}} </p>
+                            <p class="container description" v-if='statsVisibility'> Speed - {{currentOperator.speed}} </p>
+                            <p class="container description" v-if='statsVisibility'> Armor - {{currentOperator.armor}} </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="button-block">
+                            <!-- Если statsVisibility == true, эти значения показываются  -->
+                            <button class="btn btn-outline-success mr-2" 
+                                v-on:click='statsVisibility = !statsVisibility'
+                                v-text ="statsBtnText"
+                            ></button>
+                            <!-- v-on: -> @ -->
+                            <button class="btn btn-primary" @click="modalVisibility = true">Buy</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 pl-0">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">Card</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">You have chosen the following operators:</h6>
+                            <p class="card-text" v-for = "(operator, index) in boughtOperator"> {{operator.position}} - {{operator.name}}</p>
+                            <button href="#" class="btn btn-link">Buy</button>
+                            <button class="btn btn-link" v-on:click="boughtOperator = []">Clear the card</button>
+                        </div>
+                    <div>
+                </div>
+
+                <div class="modal fade show" v-if="modalVisibility" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Do you want to buy this operator?</h5>
+                          <button 
+                          type="button" 
+                          class="close" 
+                          data-dismiss="modal" 
+                          aria-label="Close"
+                          @click="modalVisibility = false">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p>Do you want to buy this operator?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal" v-on:click = "modalVisibility = !modalVisibility">No</button>
+                          <button type="button" class="btn btn-primary" @click="buyOperator">Yes</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class = "modal-backdrop fade show"  v-if="modalVisibility"></div>
+                
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> <!--  подключение vue -->
+        <script src="app.js"></script> <!-- подключение js файла -->
+    </body>
+</html>
